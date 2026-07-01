@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evolve ETF Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#102B46; --navy2:#1B4A72; --blue:#1E6FFF; --blueDk:#1758CC;
+    --blueTint:#EAF1FF; --light:#F6F8FB; --border:#E6EAF0; --text:#263238;
+    --muted:#6C7A89; --white:#fff; --green:#12B76A; --greenTint:#E7F8EF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  body{background:var(--light);color:var(--text);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:620px;margin:0 auto;padding:0 18px 100px;}
+  button{font-family:inherit;}
+  button:focus-visible,input:focus-visible{outline:3px solid rgba(30,111,255,.35);outline-offset:2px;}
+  .cta:hover:not(:disabled){background:var(--blueDk)!important;}
+  .ghost:hover{background:var(--light)!important;}
+
+  /* logo */
+  .brandbar{display:flex;align-items:center;justify-content:space-between;padding:22px 2px 10px;}
+  .logo{display:flex;align-items:flex-end;gap:0;}
+  .logo svg{height:30px;width:auto;display:block;}
+  .brandbar .sub{color:var(--muted);font-size:13px;margin-left:12px;font-weight:500;}
+  .count{color:var(--muted);font-size:13px;font-weight:600;}
+
+  /* progress */
+  .progress{height:6px;background:var(--border);border-radius:99px;margin:4px 2px 26px;overflow:hidden;}
+  .progress > div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--navy2));transition:width .4s ease;}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:24px;padding:46px 30px 40px;color:#fff;margin-top:8px;position:relative;overflow:hidden;}
+  .hero .glow{position:absolute;top:-60px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(30,111,255,.5),transparent 70%);}
+  .badge{display:inline-block;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.12);font-size:12.5px;font-weight:600;margin-bottom:20px;}
+  .hero h1{font-size:34px;font-weight:700;line-height:1.15;letter-spacing:-.8px;}
+  .hero p{font-size:16.5px;opacity:.9;margin-top:16px;line-height:1.6;max-width:440px;}
+  .startbtn{margin-top:28px;padding:16px 34px;border-radius:99px;border:none;background:var(--blue);color:#fff;font-weight:700;font-size:16px;cursor:pointer;}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;}
+  .tile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px 14px;}
+  .tile b{color:var(--navy);font-size:15px;display:block;}
+  .tile span{color:var(--muted);font-size:13px;}
+
+  /* question head */
+  .eyebrow{color:var(--blue);font-weight:700;font-size:12.5px;letter-spacing:1px;text-transform:uppercase;}
+  h2.q{color:var(--navy);font-size:26px;font-weight:700;margin-top:8px;letter-spacing:-.5px;line-height:1.2;}
+  .qsub{color:var(--muted);margin-top:8px;font-size:15px;}
+  .qhead{margin-bottom:22px;}
+
+  /* options */
+  .opt{width:100%;text-align:left;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--navy);font-weight:500;font-size:15.5px;padding:16px 18px;border-radius:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;transition:border-color .15s,background .15s;}
+  .opt.on{border-color:var(--blue);background:var(--blueTint);}
+  .mark{width:20px;height:20px;flex-shrink:0;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;background:#fff;}
+  .mark.radio{border-radius:99px;}
+  .mark.box{border-radius:6px;}
+  .opt.on .mark{border-color:var(--blue);background:var(--blue);}
+
+  /* chip grid (multi) */
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .chip{cursor:pointer;padding:14px 12px;border-radius:13px;font-size:14px;font-weight:600;text-align:left;border:1.5px solid var(--border);background:#fff;color:var(--navy);}
+  .chip.on{border-color:var(--blue);background:var(--blueTint);color:var(--blue);}
+
+  /* slider */
+  .slidercard{background:#fff;border:1px solid var(--border);border-radius:18px;padding:28px 22px;}
+  .risklabel{text-align:center;margin-bottom:22px;}
+  .risklabel b{font-size:24px;font-weight:800;color:var(--navy);display:block;}
+  .risklabel span{color:var(--muted);font-size:13.5px;margin-top:4px;display:block;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:99px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid var(--blue);cursor:pointer;box-shadow:0 3px 10px rgba(30,111,255,.35);margin-top:-9px;}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid var(--blue);cursor:pointer;box-shadow:0 3px 10px rgba(30,111,255,.35);}
+  .ticks{display:flex;justify-content:space-between;margin-top:10px;color:var(--muted);font-size:12px;}
+
+  /* nav */
+  .qnav{display:flex;gap:12px;margin-top:26px;}
+  .backbtn{padding:15px 22px;border-radius:99px;border:1.5px solid var(--border);background:#fff;color:var(--navy);font-weight:600;cursor:pointer;font-size:15px;}
+  .nextbtn{flex:1;padding:15px 22px;border-radius:99px;border:none;font-weight:700;font-size:15.5px;cursor:pointer;background:var(--blue);color:#fff;}
+  .nextbtn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+
+  /* results */
+  .summary{background:var(--navy);color:#fff;border-radius:18px;padding:20px 22px;margin:16px 0 22px;}
+  .summary .lbl{font-size:12.5px;font-weight:700;opacity:.8;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .summary p{line-height:1.6;font-size:15px;}
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;}
+  .tab{flex:0 0 auto;padding:9px 16px;border-radius:99px;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--navy);font-weight:600;font-size:14px;}
+  .tab.on{border-color:var(--navy);background:var(--navy);color:#fff;}
+
+  .fund{background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
+  .fund.best{box-shadow:0 12px 30px rgba(16,43,70,.10);}
+  .fundtop{display:flex;gap:16px;align-items:flex-start;}
+  .fundmeta{flex:1;min-width:0;}
+  .tick{font-weight:800;color:var(--navy);font-size:16px;}
+  .bestbadge{background:var(--blueTint);color:var(--blue);font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;margin-left:8px;}
+  .fname{color:var(--navy);font-size:15px;font-weight:600;margin-top:3px;line-height:1.3;}
+  .fsmall{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;color:var(--muted);font-size:12.5px;}
+  .reasons{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .reason{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:var(--text);}
+  .fundbtns{display:flex;gap:10px;margin-top:16px;}
+  .fundbtns button{flex:1;padding:11px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--navy);}
+  .fundbtns button.cmp.on{border-color:var(--blue);background:var(--blueTint);color:var(--blue);}
+  .detail{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+  .field{margin-bottom:12px;}
+  .field .k{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+  .field .v{color:var(--text);font-size:14px;line-height:1.5;}
+  .pills{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--border);color:var(--blue);font-weight:600;font-size:13px;cursor:pointer;background:#fff;}
+
+  .panel{background:#fff;border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;}
+  .panel h3{color:var(--navy);font-size:17px;font-weight:700;margin-bottom:16px;}
+  .bar{margin-bottom:14px;}
+  .bar .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+  .bar .row b{color:var(--navy);font-weight:600;}
+  .bar .row span{color:var(--muted);}
+  .bar .track{height:10px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .bar .track > i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--navy2));transition:width 1s cubic-bezier(.2,.8,.2,1);}
+
+  .allocbar{display:flex;height:20px;border-radius:99px;overflow:hidden;margin-bottom:18px;}
+  .alrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+  .alrow b{color:var(--navy);width:52px;}
+  .alrow .nm{color:var(--navy);font-weight:600;}
+  .alrow .d{color:var(--muted);font-size:13px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:360px;}
+  th{text-align:left;padding:10px;border-bottom:2px solid var(--border);color:var(--muted);font-weight:700;font-size:12.5px;}
+  td{padding:12px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+  td.k{color:var(--muted);font-weight:600;}
+
+  .learnrow{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border);}
+  .learnrow .n{width:32px;height:32px;border-radius:9px;flex-shrink:0;background:var(--blueTint);display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:800;}
+  .learnrow b{color:var(--navy);font-weight:600;font-size:14.5px;}
+
+  label.lbl{color:var(--navy);font-size:13px;font-weight:600;display:block;}
+  .lbl input{width:100%;padding:13px 15px;border-radius:12px;border:1.5px solid var(--border);font-size:15px;margin-top:6px;color:var(--text);}
+  .segbtns{display:flex;gap:10px;margin-top:6px;}
+  .segbtns button{flex:1;padding:12px;border-radius:12px;cursor:pointer;font-weight:600;border:1.5px solid var(--border);background:#fff;color:var(--navy);}
+  .segbtns button.on{border-color:var(--blue);background:var(--blueTint);color:var(--blue);}
+  .submit{width:100%;margin-top:20px;padding:15px;border-radius:99px;border:none;font-weight:700;font-size:15px;cursor:pointer;background:var(--blue);color:#fff;}
+  .submit:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+
+  .retake{width:100%;margin-top:18px;padding:14px;border-radius:99px;border:1.5px solid var(--border);background:#fff;color:var(--navy);font-weight:600;cursor:pointer;}
+  .disclaimer{color:var(--muted);font-size:11px;line-height:1.6;margin-top:26px;text-align:center;padding:0 6px;}
+  .fade{animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+  <div class="wrap" id="app"></div>
+
+<script>
+/* ======================= Brand logo (recreated as SVG) ======================= */
+function logoSVG(){
+  return `
+  <svg viewBox="0 0 300 96" role="img" aria-label="Evolve ETFs">
+    <g fill="#102B46">
+      <text x="0" y="60" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="62" letter-spacing="-1">EV</text>
+      <!-- aperture O -->
+      <g transform="translate(122,38)">
+        <circle cx="0" cy="0" r="26" fill="none" stroke="#102B46" stroke-width="10"/>
+        <circle cx="-4" cy="-3" r="13" fill="none" stroke="#102B46" stroke-width="7"/>
+      </g>
+      <text x="150" y="60" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="62" letter-spacing="-1">LVE</text>
+    </g>
+    <g fill="#102B46">
+      <rect x="70" y="82" width="46" height="4" rx="2"/>
+      <text x="150" y="90" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="24" letter-spacing="3">ETFs</text>
+      <rect x="184" y="82" width="46" height="4" rx="2"/>
+    </g>
+  </svg>`;
+}
+
+/* ======================= Data (ILLUSTRATIVE — replace with official) ======================= */
+const FUNDS = [
+  {ticker:"ARTI",name:"Evolve Artificial Intelligence Fund",type:"thematic",themes:["Artificial Intelligence","Technology","U.S. Equities","Global Markets"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Seeks long-term capital growth by investing in companies developing or applying artificial intelligence.",holdings:["NVIDIA","Microsoft","Alphabet","Meta","Broadcom"],sectors:[["Technology",68],["Communication",18],["Consumer",14]]},
+  {ticker:"EDGE",name:"Evolve Innovation Index Fund",type:"thematic",themes:["Technology","Artificial Intelligence","Global Markets","U.S. Equities"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Provides exposure to disruptive innovation across AI, robotics, fintech, genomics and clean energy.",holdings:["Tesla","Palantir","Shopify","CrowdStrike","Coinbase"],sectors:[["Technology",55],["Health Care",20],["Financials",15],["Other",10]]},
+  {ticker:"CYBR",name:"Evolve Cyber Security Index Fund",type:"thematic",themes:["Technology","U.S. Equities","Global Markets"],risk:3,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Tracks companies in the cyber-security industry across hardware, software and services.",holdings:["Palo Alto","Fortinet","CrowdStrike","Zscaler","Cloudflare"],sectors:[["Technology",88],["Industrials",12]]},
+  {ticker:"HERO",name:"Evolve E-Gaming Index Fund",type:"thematic",themes:["Technology","Global Markets"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Provides exposure to the global e-gaming and esports industry.",holdings:["Nintendo","Roblox","EA","Take-Two","Sea Ltd"],sectors:[["Communication",60],["Technology",28],["Consumer",12]]},
+  {ticker:"CARS",name:"Evolve Automobile Innovation Index Fund",type:"thematic",themes:["Technology","Global Markets"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Invests in companies driving innovation in electric and autonomous vehicles.",holdings:["Tesla","BYD","NVIDIA","Aptiv","ON Semi"],sectors:[["Consumer Disc.",45],["Technology",40],["Industrials",15]]},
+  {ticker:"LIFE",name:"Evolve Global Healthcare Enhanced Yield Fund",type:"income",themes:["Healthcare","Global Markets","Covered Call Strategies","Dividend Investing"],risk:2,growth:1,income:3,distribution:"Monthly",goals:["income","reduce","diversify"],objective:"Combines a portfolio of global healthcare leaders with a covered-call strategy to enhance monthly income.",holdings:["UnitedHealth","Eli Lilly","J&J","Merck","AbbVie"],sectors:[["Health Care",100]]},
+  {ticker:"CALL",name:"Evolve US Banks Enhanced Yield Fund",type:"income",themes:["Financials","U.S. Equities","Covered Call Strategies","Dividend Investing"],risk:3,growth:1,income:3,distribution:"Monthly",goals:["income","diversify"],objective:"Holds large-cap U.S. banks with a covered-call overlay to generate enhanced monthly cash flow.",holdings:["JPMorgan","Bank of America","Wells Fargo","Morgan Stanley","Goldman Sachs"],sectors:[["Financials",100]]},
+  {ticker:"BANK",name:"Evolve Canadian Banks Enhanced Yield Fund",type:"income",themes:["Financials","Canadian Equities","Covered Call Strategies","Dividend Investing"],risk:2,growth:1,income:3,distribution:"Monthly",goals:["income","reduce"],objective:"Holds the major Canadian banks with a covered-call strategy for enhanced monthly income.",holdings:["RBC","TD","Scotiabank","BMO","CIBC"],sectors:[["Financials",100]]},
+  {ticker:"ESPX",name:"Evolve S&P 500 Enhanced Yield Fund",type:"income",themes:["U.S. Equities","Covered Call Strategies","Dividend Investing"],risk:2,growth:2,income:3,distribution:"Monthly",goals:["income","wealth","diversify"],objective:"Tracks the S&P 500 with a covered-call overlay to deliver monthly income plus market participation.",holdings:["Apple","Microsoft","NVIDIA","Amazon","Alphabet"],sectors:[["Technology",32],["Financials",14],["Health Care",12],["Other",42]]},
+  {ticker:"TECH",name:"Evolve FANGMA Index Fund",type:"thematic",themes:["Technology","U.S. Equities","Artificial Intelligence"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Equal-weight exposure to the six mega-cap U.S. technology leaders.",holdings:["Apple","Microsoft","Alphabet","Amazon","Meta"],sectors:[["Technology",66],["Communication",20],["Consumer Disc.",14]]},
+  {ticker:"BOND",name:"Evolve Active Core Fixed Income Fund",type:"fixed",themes:["Canadian Equities","Global Markets"],risk:1,growth:0,income:2,distribution:"Monthly",goals:["preserve","reduce","income","diversify"],objective:"Actively managed core fixed-income portfolio focused on capital preservation and steady income.",holdings:["Gov't of Canada","Provincial bonds","Investment-grade corp.","US Treasuries"],sectors:[["Government",55],["Corporate",40],["Cash",5]]},
+  {ticker:"EBIT",name:"Evolve Bitcoin ETF",type:"crypto",themes:["Crypto Assets"],risk:4,growth:3,income:0,distribution:"None",goals:["wealth","innovation"],objective:"Provides direct exposure to the price of bitcoin.",holdings:["Bitcoin (spot)"],sectors:[["Digital Assets",100]]},
+];
+
+const RISK_LABELS=["Conservative","Balanced","Growth","Aggressive"];
+const RISK_DESC=["Prioritizes stability over growth.","A balance of growth and stability.","Accepts more ups and downs for growth.","Comfortable with large swings for maximum growth."];
+const GOAL_REASON={wealth:"Supports long-term wealth building",income:"Designed to generate income",preserve:"Oriented toward capital preservation",diversify:"Adds diversification to a portfolio",innovation:"Focused on innovation",reduce:"Aims to reduce volatility"};
+const GOALS=[["wealth","Build long-term wealth"],["income","Generate monthly income"],["preserve","Preserve capital"],["diversify","Diversify my portfolio"],["innovation","Invest in innovation"],["reduce","Reduce portfolio volatility"]];
+const INTERESTS=["Artificial Intelligence","Technology","Healthcare","Energy","Financials","Canadian Equities","U.S. Equities","Global Markets","Crypto Assets","Dividend Investing","Covered Call Strategies","ESG / Sustainability"];
+const HORIZONS=["Less than 2 years","2–5 years","5–10 years","10+ years"];
+const INCOME_OPTS=[["monthly","Monthly income is important"],["quarterly","Quarterly is fine"],["growth","Growth is more important than income"],["none","No preference"]];
+const EXISTING=["Broad market ETFs","Individual stocks","Mutual funds","Bonds","GICs","Cash","Crypto","None"];
+const KNOWLEDGE=["Beginner","Some experience","Experienced investor","Financial advisor"];
+const TOTAL=7;
+
+/* ======================= State ======================= */
+const S={step:0,goal:null,interests:[],horizon:null,risk:1,income:null,existing:[],knowledge:null,tab:"matches",open:null,compare:[],leadDone:false};
+
+/* ======================= Matching engine ======================= */
+function scoreFund(f){
+  let score=0; const reasons=[];
+  const matched=S.interests.filter(t=>f.themes.includes(t));
+  if(matched.length){score+=Math.min(matched.length,3)*22; matched.slice(0,2).forEach(t=>reasons.push("Interested in "+t));}
+  const gap=Math.abs(S.risk-(f.risk-1));
+  score+=(3-gap)*12;
+  if(gap===0) reasons.push("Matches your "+RISK_LABELS[S.risk].toLowerCase()+" risk comfort");
+  else if(gap===1) reasons.push("Close to your risk comfort");
+  if(S.goal && f.goals.includes(S.goal)){score+=20; reasons.push(GOAL_REASON[S.goal]);}
+  if(S.income==="monthly"&&f.distribution==="Monthly"&&f.income>=2){score+=24; reasons.push("Pays monthly income");}
+  else if(S.income==="quarterly"&&f.income>=2){score+=12; reasons.push("Provides regular income");}
+  else if(S.income==="growth"&&f.growth>=2&&f.income<=1){score+=18; reasons.push("Prioritizes growth over income");}
+  const hi=HORIZONS.indexOf(S.horizon);
+  if(hi>=0){ if(hi<=1&&f.risk<=2) score+=12; else if(hi>=2&&f.growth>=2) score+=12; else score+=4; }
+  if(S.existing.includes("Broad market ETFs")&&f.type==="thematic"){score+=8; reasons.push("Complements broad-market holdings");}
+  const pct=Math.max(45,Math.min(97,Math.round(score/132*100)));
+  const seen=new Set(); const clean=reasons.filter(r=>seen.has(r)?false:(seen.add(r),true));
+  return {pct,reasons:clean.slice(0,4),raw:score};
+}
+function rankFunds(){return FUNDS.map(f=>Object.assign({fund:f},scoreFund(f))).sort((a,b)=>b.raw-a.raw);}
+function buildAllocation(ranked){
+  const top=ranked.slice(0,6);
+  const broad=top.find(r=>r.fund.type==="broad"||r.fund.ticker==="ESPX");
+  const income=top.find(r=>r.fund.type==="income");
+  const thematic=top.filter(r=>r.fund.type==="thematic").slice(0,2);
+  const fixed=top.find(r=>r.fund.type==="fixed");
+  const rows=[];
+  if(broad) rows.push({label:broad.fund.ticker,name:"Core U.S. equity",pct:35});
+  if(thematic[0]) rows.push({label:thematic[0].fund.ticker,name:"Innovation / theme",pct:25});
+  if(thematic[1]) rows.push({label:thematic[1].fund.ticker,name:"Secondary theme",pct:15});
+  if(income&&S.income!=="growth") rows.push({label:income.fund.ticker,name:"Income",pct:15});
+  if(fixed&&S.risk<=1) rows.push({label:fixed.fund.ticker,name:"Fixed income",pct:10});
+  const total=rows.reduce((s,r)=>s+r.pct,0)||1;
+  rows.forEach(r=>r.pct=Math.round(r.pct/total*100));
+  const diff=100-rows.reduce((s,r)=>s+r.pct,0);
+  if(rows.length) rows[0].pct+=diff;
+  return rows;
+}
+function profileBars(){
+  const themes=S.interests;
+  const tech=themes.filter(t=>["Artificial Intelligence","Technology"].includes(t)).length;
+  const intl=themes.includes("Global Markets")||themes.includes("U.S. Equities");
+  return [
+    {label:"Growth",val:[30,55,78,95][S.risk]},
+    {label:"Technology",val:Math.min(95,25+tech*35)},
+    {label:"Income",val:S.income==="monthly"?85:S.income==="quarterly"?60:25},
+    {label:"International",val:intl?70:35},
+  ];
+}
+function aiSummary(top){
+  const goal=(GOALS.find(g=>g[0]===S.goal)||[])[1];
+  const g=goal?goal.toLowerCase():"your goals";
+  const risk=RISK_LABELS[S.risk].toLowerCase();
+  const themes=S.interests.slice(0,2).join(" and ")||"a range of areas";
+  const horizon=S.horizon?S.horizon.toLowerCase():"your chosen horizon";
+  let inc="";
+  if(S.income==="monthly") inc=" You also prioritized monthly income, so covered-call and enhanced-yield funds feature in your matches.";
+  else if(S.income==="growth") inc=" You favored growth over income, which is reflected in the growth-oriented funds above.";
+  return "Based on your answers, you're focused on "+g+" with an interest in "+themes+". You described a "+risk+" comfort with market movement and a horizon of "+horizon+", which makes funds like "+(top[0]?top[0].fund.ticker:"—")+" an educational fit to explore."+inc;
+}
+function learningPath(){
+  const t=S.interests, out=[]; const base=["Long-term investing principles","Understanding sector concentration"];
+  if(t.includes("Artificial Intelligence")||t.includes("Technology")) out.push("What is an AI or thematic ETF?","Benefits of thematic investing","Technology market outlook");
+  if(t.includes("Covered Call Strategies")||S.income==="monthly") out.push("Covered call strategies explained","Monthly distributions: yield vs. total return");
+  if(t.includes("Dividend Investing")) out.push("Building an income-focused portfolio");
+  if(t.includes("Crypto Assets")) out.push("How crypto ETFs work");
+  if(t.includes("ESG / Sustainability")) out.push("The basics of ESG investing");
+  return [...new Set([...out,...base])].slice(0,6);
+}
+
+/* ======================= Helpers ======================= */
+const $=s=>document.getElementById(s);
+const ALLOC_COLORS=["#102B46","#1E6FFF","#1B4A72","#4C8DFF","#8FB8FF"];
+function ringSVG(pct,size=64){
+  const stroke=7,r=(size-stroke)/2,c=2*Math.PI*r,off=c-(pct/100)*c;
+  return `<svg width="${size}" height="${size}" style="display:block">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--blue)" stroke-width="${stroke}"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
+      transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"
+      style="font:700 ${size*0.26}px Inter;fill:var(--navy)">${pct}%</text></svg>`;
+}
+const checkIcon=`<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:2px"><circle cx="8" cy="8" r="8" fill="var(--greenTint)"/><path d="M4.5 8.2l2.2 2.2 4.8-4.8" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function tickMark(on,shape){return `<span class="mark ${shape}">${on?'<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</span>`;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ======================= Actions ======================= */
+function set(k,v){S[k]=v;render();}
+function toggle(k,v){const a=S[k];S[k]=a.includes(v)?a.filter(x=>x!==v):[...a,v];render();}
+function toggleCompare(t){S.compare=S.compare.includes(t)?S.compare.filter(x=>x!==t):(S.compare.length<3?[...S.compare,t]:S.compare);render();}
+function canNext(){
+  switch(S.step){case 1:return !!S.goal;case 2:return S.interests.length>0;case 3:return !!S.horizon;
+    case 4:return true;case 5:return !!S.income;case 6:return true;case 7:return !!S.knowledge;default:return true;}
+}
+function go(d){S.step+=d;render();window.scrollTo({top:0,behavior:'smooth'});}
+function reset(){Object.assign(S,{step:0,goal:null,interests:[],horizon:null,risk:1,income:null,existing:[],knowledge:null,tab:"matches",open:null,compare:[],leadDone:false});render();}
+
+/* ======================= Screens ======================= */
+function brandbar(){
+  const count=(S.step>0&&S.step<=TOTAL)?`<span class="count">${S.step} / ${TOTAL}</span>`:'';
+  return `<div class="brandbar"><div class="logo">${logoSVG()}<span class="sub">ETF Discovery</span></div>${count}</div>`;
+}
+function disclaimer(){
+  return `<p class="disclaimer">For educational purposes only. Not investment, tax, or financial advice, and not a recommendation to buy or sell any fund. Fund data shown is <strong>illustrative placeholder data</strong> and must be replaced with official current Evolve fund information. Commissions, management fees and expenses may be associated with ETF investments. Please read the prospectus before investing.</p>`;
+}
+function qhead(eyebrow,title,sub){
+  return `<div class="qhead"><div class="eyebrow">${eyebrow}</div><h2 class="q">${title}</h2>${sub?`<p class="qsub">${sub}</p>`:''}</div>`;
+}
+function qnav(){
+  const back=S.step>1?`<button class="backbtn ghost" onclick="go(-1)">Back</button>`:'';
+  const label=S.step===TOTAL?"See my matches":"Continue";
+  return `<div class="qnav">${back}<button class="nextbtn" ${canNext()?'':'disabled'} onclick="go(1)">${label}</button></div>`;
+}
+
+function render(){
+  const app=$("app");
+  /* WELCOME */
+  if(S.step===0){
+    app.innerHTML=brandbar()+`
+      <div class="hero"><div class="glow"></div>
+        <div class="badge">2–3 minute quiz · Educational</div>
+        <h1>Discover ETFs that match your investment goals</h1>
+        <p>Answer a few questions to explore Evolve ETFs that align with your interests and objectives — with plain-language explanations of why each one fits.</p>
+        <button class="startbtn cta" onclick="go(1)">Start quiz</button>
+      </div>
+      <div class="tiles">
+        <div class="tile"><b>Guided</b><span>questions</span></div>
+        <div class="tile"><b>Personalized</b><span>shortlist</span></div>
+        <div class="tile"><b>Educational</b><span>resources</span></div>
+      </div>`+disclaimer();
+    return;
+  }
+  /* RESULTS */
+  if(S.step>TOTAL){ renderResults(); return; }
+  /* QUESTIONS */
+  let body="";
+  if(S.step===1){
+    body=qhead("Goals","What are you hoping to achieve?","Choose the one that fits best right now.")+
+      GOALS.map(([id,l])=>`<button class="opt ${S.goal===id?'on':''}" onclick="set('goal','${id}')">${tickMark(S.goal===id,'radio')}${l}</button>`).join('');
+  } else if(S.step===2){
+    body=qhead("Interests","Which themes interest you most?","Pick as many as you like.")+
+      `<div class="chips">`+INTERESTS.map(t=>`<button class="chip ${S.interests.includes(t)?'on':''}" onclick="toggle('interests','${esc(t)}')">${t}</button>`).join('')+`</div>`;
+  } else if(S.step===3){
+    body=qhead("Time horizon","When will you likely need this money?")+
+      HORIZONS.map(h=>`<button class="opt ${S.horizon===h?'on':''}" onclick="set('horizon','${esc(h)}')">${tickMark(S.horizon===h,'radio')}${h}</button>`).join('');
+  } else if(S.step===4){
+    const pct=(S.risk/3)*100;
+    body=qhead("Risk comfort","How comfortable are you with market fluctuations?")+
+      `<div class="slidercard">
+        <div class="risklabel"><b>${RISK_LABELS[S.risk]}</b><span>${RISK_DESC[S.risk]}</span></div>
+        <input type="range" min="0" max="3" step="1" value="${S.risk}" oninput="set('risk',+this.value)"
+          style="background:linear-gradient(90deg,var(--blue) ${pct}%,var(--border) ${pct}%)"/>
+        <div class="ticks">${RISK_LABELS.map(l=>`<span>${l}</span>`).join('')}</div>
+      </div>`;
+  } else if(S.step===5){
+    body=qhead("Income","Would you like regular cash flow from your investments?")+
+      INCOME_OPTS.map(([id,l])=>`<button class="opt ${S.income===id?'on':''}" onclick="set('income','${id}')">${tickMark(S.income===id,'radio')}${l}</button>`).join('');
+  } else if(S.step===6){
+    body=qhead("Existing investments · optional","What do you already own?","This helps identify complementary funds rather than duplicating exposure.")+
+      `<div class="chips">`+EXISTING.map(t=>`<button class="chip ${S.existing.includes(t)?'on':''}" onclick="toggle('existing','${esc(t)}')">${t}</button>`).join('')+`</div>`;
+  } else if(S.step===7){
+    body=qhead("Experience","How would you describe your investing experience?","We adjust how much we explain in your results.")+
+      KNOWLEDGE.map(k=>`<button class="opt ${S.knowledge===k?'on':''}" onclick="set('knowledge','${esc(k)}')">${tickMark(S.knowledge===k,'radio')}${k}</button>`).join('');
+  }
+  app.innerHTML=brandbar()+`<div class="progress"><div style="width:${(S.step/TOTAL)*100}%"></div></div><div class="fade">${body}</div>`+qnav()+disclaimer();
+}
+
+function renderResults(){
+  const app=$("app");
+  const ranked=rankFunds();
+  const top=ranked.slice(0,5);
+  const alloc=buildAllocation(ranked);
+  const tabs=[["matches","Matches"],["portfolio","Portfolio"],["compare","Compare"],["learn","Learn"],["save","Save"]];
+  let content="";
+
+  if(S.tab==="matches"){
+    content=top.map((r,i)=>{
+      const f=r.fund, open=S.open===f.ticker;
+      const detail=open?`<div class="detail">
+        <div class="field"><div class="k">Objective</div><div class="v">${f.objective}</div></div>
+        <div class="field"><div class="k">Top holdings</div><div class="v">${f.holdings.join(" · ")}</div></div>
+        <div class="field"><div class="k">Sector exposure</div>${f.sectors.map(([n,p])=>bar(n,p)).join('')}</div>
+        <div class="pills"><span class="pill">Fact sheet <span style="opacity:.6">→</span></span><span class="pill">Performance <span style="opacity:.6">→</span></span><span class="pill">Articles <span style="opacity:.6">→</span></span></div>
+      </div>`:'';
+      return `<div class="fund ${i===0?'best':''}">
+        <div class="fundtop">${ringSVG(r.pct)}
+          <div class="fundmeta">
+            <div><span class="tick">${f.ticker}</span>${i===0?'<span class="bestbadge">BEST MATCH</span>':''}</div>
+            <div class="fname">${f.name}</div>
+            <div class="fsmall"><span>Risk · ${RISK_LABELS[f.risk-1]}</span><span>Distributions · ${f.distribution}</span></div>
+          </div>
+        </div>
+        <div class="reasons">${r.reasons.map(w=>`<div class="reason">${checkIcon}<span>${w}</span></div>`).join('')}</div>
+        <div class="fundbtns">
+          <button class="ghost" onclick="set('open','${open?'':f.ticker}')">${open?'Hide details':'View details'}</button>
+          <button class="cmp ${S.compare.includes(f.ticker)?'on':''}" onclick="toggleCompare('${f.ticker}')">${S.compare.includes(f.ticker)?'Added ✓':'Compare'}</button>
+        </div>${detail}
+      </div>`;
+    }).join('');
+    if(S.compare.length) content+=`<button class="cta" style="width:100%;margin-top:6px;padding:15px;border-radius:99px;border:none;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;font-size:15px" onclick="set('tab','compare')">Compare ${S.compare.length} selected</button>`;
+  }
+
+  else if(S.tab==="portfolio"){
+    content=`<div class="panel"><h3>Your profile at a glance</h3>${profileBars().map(b=>bar(b.label,b.val)).join('')}</div>
+      <div class="panel"><h3>Illustrative portfolio mix</h3>
+        <p style="color:var(--muted);font-size:13.5px;margin:-4px 0 16px;line-height:1.5">An educational example of how different funds could play complementary roles — not a recommendation.</p>
+        <div class="allocbar">${alloc.map((r,i)=>`<div style="width:${r.pct}%;background:${ALLOC_COLORS[i%5]}" title="${r.label} ${r.pct}%"></div>`).join('')}</div>
+        ${alloc.map((r,i)=>`<div class="alrow"><span class="swatch" style="background:${ALLOC_COLORS[i%5]}"></span><b>${r.pct}%</b><span class="nm">${r.label}</span><span class="d">· ${r.name}</span></div>`).join('')}
+      </div>`;
+  }
+
+  else if(S.tab==="compare"){
+    if(!S.compare.length){
+      content=`<div class="panel"><h3>Side-by-side comparison</h3><div style="text-align:center;padding:10px 4px"><p style="color:var(--muted);font-size:14.5px;line-height:1.5;margin-bottom:16px">Pick up to 3 funds from the Matches tab to compare them here.</p><button class="cta" style="padding:12px 22px;border-radius:99px;border:none;background:var(--blue);color:#fff;font-weight:700;cursor:pointer" onclick="set('tab','matches')">Go to matches</button></div></div>`;
+    } else {
+      const rows=[["Focus",f=>f.themes[0]],["Risk",f=>RISK_LABELS[f.risk-1]],["Distributions",f=>f.distribution],["Growth",f=>["Low","Low","Moderate","High"][f.growth]],["Income",f=>["None","Low","Moderate","High"][f.income]]];
+      content=`<div class="panel"><h3>Side-by-side comparison</h3><div style="overflow-x:auto"><table>
+        <thead><tr><th>Feature</th>${S.compare.map(t=>`<th style="color:var(--navy)">${t}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(([label,fn])=>`<tr><td class="k">${label}</td>${S.compare.map(t=>{const f=FUNDS.find(x=>x.ticker===t);return `<td>${fn(f)}</td>`;}).join('')}</tr>`).join('')}</tbody>
+      </table></div></div>`;
+    }
+  }
+
+  else if(S.tab==="learn"){
+    content=`<div class="panel"><h3>Your learning path</h3><p style="color:var(--muted);font-size:13.5px;margin:-4px 0 16px">Based on the themes you chose.</p>${learningPath().map(i=>`<div class="learnrow"><span class="n">›</span><b>${i}</b></div>`).join('')}</div>`;
+  }
+
+  else if(S.tab==="save"){
+    if(S.leadDone){
+      content=`<div class="panel"><h3>Get a copy of your matches</h3><div style="text-align:center;padding:16px 4px"><div style="font-size:40px">✓</div><h3 style="margin:6px 0">You're all set</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your personalized summary, fact sheets, and educational resources would be emailed to you.</p></div></div>`;
+    } else {
+      content=`<div class="panel"><h3>Get a copy of your matches</h3>
+        <label class="lbl">Name<input id="ld_name" oninput="checkLead()" placeholder="Your name"/></label>
+        <div style="height:14px"></div>
+        <label class="lbl">Email<input id="ld_email" type="email" oninput="checkLead()" placeholder="you@example.com"/></label>
+        <div style="height:14px"></div>
+        <div class="lbl">I am an</div>
+        <div class="segbtns"><button id="ld_inv" class="on" onclick="pickType('Investor')">Investor</button><button id="ld_adv" onclick="pickType('Advisor')">Advisor</button></div>
+        <div style="height:14px"></div>
+        <label class="lbl">Province <span style="color:var(--muted);font-weight:400">(optional)</span><input id="ld_prov" placeholder="e.g. Ontario"/></label>
+        <button id="ld_submit" class="submit" disabled onclick="S.leadDone=true;render()">Email my ETF matches</button>
+        <p style="color:var(--muted);font-size:11.5px;margin-top:10px;line-height:1.5">Demo only — no data is sent or stored. Connect this form to your CRM / marketing platform in production.</p>
+      </div>`;
+    }
+  }
+
+  app.innerHTML=brandbar()+`
+    <div style="margin:6px 0"><div class="eyebrow">Your results</div><h2 class="q">Top matches for you</h2></div>
+    <div class="summary"><div class="lbl">Your summary</div><p>${aiSummary(top)}</p></div>
+    <div class="tabs">${tabs.map(([id,l])=>`<button class="tab ${S.tab===id?'on':''}" onclick="set('tab','${id}')">${l}</button>`).join('')}</div>
+    <div class="fade">${content}</div>
+    <button class="retake" onclick="reset()">Retake quiz</button>`+disclaimer();
+}
+
+function bar(label,val,sub){
+  return `<div class="bar"><div class="row"><b>${label}</b><span>${sub||val+'%'}</span></div><div class="track"><i style="width:${val}%"></i></div></div>`;
+}
+
+/* lead form helpers */
+let leadType="Investor";
+function pickType(t){leadType=t;$("ld_inv").classList.toggle("on",t==="Investor");$("ld_adv").classList.toggle("on",t==="Advisor");}
+function checkLead(){
+  const n=$("ld_name").value.trim(), e=$("ld_email").value.trim();
+  const ok=n && /\S+@\S+\.\S+/.test(e);
+  $("ld_submit").disabled=!ok;
+}
+
+render();
+</script>
+</body>
+</html>
